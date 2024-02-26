@@ -10,7 +10,7 @@ Inspired by [this review of Sheila Heti's Alphabetical Diaries](https://artrevie
 
 ### setup
 1. Follow the instructions in https://www.notion.so/help/create-integrations-with-the-notion-api to create a Notion integration and receive an API key!
-2. Share the desired files with the Notion integration added to your workspace.
+2. Share the desired pages and databases in your workspace with the Notion integration.
 3. With NPM installed, run `npm install` and in this root directory. Optionally use `npm install -g` instead to install globally so you can use the command `journo` directly.
 4. Use `npm build` to build the codebase.
 5. Now, you can use either `npm run journo [command]` or `journo [command]` (if you used `-g` flag above) to execute commands below!
@@ -18,8 +18,8 @@ Inspired by [this review of Sheila Heti's Alphabetical Diaries](https://artrevie
 ### commands
 - ✅ `help` - get list of commands
 - ✅ `set-api-key [Notion API key]` - to add and store an integration API key in .env file
-- ✅ `import-db [Notion Database URL]` - to ingest a database of Notion journal pages, must be shared with the integration
-- ✅ `import-page [Notion URL]` - to ingest a Notion page, must be shared with the API key
+- ✅ `import-db [Notion Database URL]` - to ingest pages from a Notion database
+- ✅ `import-page [Notion URL]` - to ingest a Notion page
 - `import /path/to/text/file` - to ingest a text file
 - ✅ `thoughts` - dump all the ingested files into a list of thoughts, with some different organizational options
   - ✅ `--abc` (alphabetical), `--regex` (filter by regex), `--sentences` (split by sentences), `--newlines` (add newlines), `--dedupe` (skip dupes), `--words` (split by words)

@@ -503,6 +503,7 @@ export function blockToPlainText(block: BlockWithRecursiveChildren) {
 			case "numbered_list_item":
 			case "quote":
 				if (block.type in block) {
+					// @ts-ignore -- todo: fix this
 					text += toPlainText(block?.[block.type]?.rich_text) ?? ""
 				}
 				break

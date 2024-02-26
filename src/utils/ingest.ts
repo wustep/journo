@@ -1,5 +1,5 @@
 import { BlockWithRecursiveChildren } from "../types/notion"
-import { type Thought } from "../types/thoughts"
+import { type Thought } from "../types/thought"
 import { IMPORT_FOLDER, getAllImportedFiles, readFile, readJSON } from "./file"
 import { blockToPlainText } from "./notion"
 
