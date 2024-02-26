@@ -8,7 +8,8 @@ This repo creates some utilities and scripts for synthesizing journals from Noti
 1. Follow the instructions in https://www.notion.so/help/create-integrations-with-the-notion-api to create a Notion integration and receive an API key!
 2. Share the desired files with the Notion integration added to your workspace.
 3. With NPM installed, run `npm install` and in this root directory. Optionally use `npm install -g` instead to install globally so you can use the command `journo` directly.
-4. Then, use either `npm run journo [command]` or `journo [command]` (if you used `-g` flag above) to execute commands below.
+4. Use `npm build` to build the codebase.
+5. Now, you can use either `npm run journo [command]` or `journo [command]` (if you used `-g` flag above) to execute commands below!
 
 ### commands
 - `help` - get list of commands
