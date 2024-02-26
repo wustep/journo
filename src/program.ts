@@ -35,25 +35,41 @@ function Program(): Command {
 	program
 		.command("import-db")
 		.argument("<database>", "ID or URL of the Notion database")
+		.option(
+			"-s, --skip",
+			"Skip querying files that have already been retrieved.",
+			false
+		)
 		.description("Import a Notion database")
 		.addHelpText(
 			"after",
 			"Note: URLs should be wrapped in quotes to be interpreted correctly!"
 		)
-		.action(async (database: string) => {
-			const databaseId = getDatabaseId(database)
-			if (!notionApiKey) {
-				console.log("No API key found, please use `api` to set it")
-				return
+		.action(
+			async (
+				database: string,
+				options: {
+					skip: boolean
+				}
+			) => {
+				console.log(database, options)
+				const { skip } = options
+				const databaseId = getDatabaseId(database)
+				if (!notionApiKey) {
+					console.error("No API key found, please use `api` to set it")
+					return
+				}
+				if (!notionClient) {
+					console.error("Invalid API key, unable to connect to Notion.")
+					return
+				}
+				if (!databaseId) {
+					console.error("Invalid database ID or URL")
+					return
+				}
+				await getDatabasePages(notionClient, databaseId, { skip })
 			}
-			if (!notionClient) {
-				console.log("Invalid API key, unable to connect to Notion.")
-				return
-			}
-			if (databaseId) {
-				const pages = await getDatabasePages(notionClient, databaseId)
-			}
-		})
+		)
 
 	return program
 }
