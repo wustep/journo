@@ -7,6 +7,5 @@ const vol = new Volume()
 createFsFromVolume(vol)
 
 jest.mock("fs", () => fs)
-jest.mock("fs-extra", () => fs)
 
 afterEach(() => vol.reset())
