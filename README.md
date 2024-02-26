@@ -22,7 +22,7 @@ Inspired by [this review of Sheila Heti's Alphabetical Diaries](https://artrevie
 - ✅ `import-page [Notion URL]` - to ingest a Notion page, must be shared with the API key
 - `import /path/to/text/file` - to ingest a text file
 - ✅ `thoughts` - dump all the ingested files into a list of thoughts, with some different organizational options
- - ✅ `--abc` (alphabetical), `--regex` (filter by regex), `--sentences` (split by sentences), `--newlines` (add newlines), `--dedupe` (skip dupes), `--words` (split by words)
+  - ✅ `--abc` (alphabetical), `--regex` (filter by regex), `--sentences` (split by sentences), `--newlines` (add newlines), `--dedupe` (skip dupes), `--words` (split by words)
 - `import-stats` - get various stats on all imported content
 - `create-notion-db [Notion Page URL]` - to create an export database at the given page (it will be nested at that page)
 - `export-csv /path/to/csv/file` - to export to csv
