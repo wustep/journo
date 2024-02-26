@@ -36,6 +36,10 @@ function Program(): Command {
 		.command("import")
 		.argument("<database>", "ID or URL of the Notion database")
 		.description("Import a Notion database")
+		.addHelpText(
+			"after",
+			"Note: URLs should be wrapped in quotes to be interpreted correctly!"
+		)
 		.action(async (database: string) => {
 			const databaseId = getDatabaseId(database)
 			if (!notionApiKey) {
@@ -48,7 +52,6 @@ function Program(): Command {
 			}
 			if (databaseId) {
 				const pages = await getDatabasePages(notionClient, databaseId)
-				console.log(pages.results)
 			}
 		})
 
