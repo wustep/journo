@@ -3,18 +3,16 @@
  */
 
 import { Client } from "@notionhq/client"
-import { readFile, writeFile, writeJSON } from "./file"
 import path from "path"
 import {
 	QueryDatabaseResponse,
 	GetPageResponse,
 	RichTextItemResponse,
 	GetDatabaseResponse,
-	BlockObjectResponse,
-	PartialBlockObjectResponse,
-	PageObjectResponse,
-	PartialPageObjectResponse,
 } from "@notionhq/client/build/src/api-endpoints"
+
+import { type Block, type BlockWithRecursiveChildren } from "../types/notion"
+import { readFile, writeJSON } from "./file"
 import { sleep } from "./sleep"
 import { withoutDashes } from "./id"
 
@@ -307,33 +305,6 @@ async function getPageResponse(
 		didSkip: false,
 	}
 }
-
-/**
- * Blocks without children recursively filled.
- */
-type Block = (
-	| PartialBlockObjectResponse
-	| BlockObjectResponse
-	| PartialPageObjectResponse
-	| PageObjectResponse
-) & {
-	children?: undefined
-}
-
-/**
- * Blocks with its children recursively filled.
- */
-type BlockWithRecursiveChildren = Omit<Block, "children"> &
-	(
-		| {
-				has_children: true
-				children: BlockWithRecursiveChildren[]
-		  }
-		| {
-				has_children: false
-				children: undefined
-		  }
-	)
 
 /**
  * Get the child blocks of a given page, recursively,
