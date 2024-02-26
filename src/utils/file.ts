@@ -14,7 +14,7 @@ export function writeFile(fileName: string, contents: string) {
 /**
  * Writes JSON content to files from the project root.
  */
-export function writeJSON(fileName: string, contents: any) {
+export function writeJSON(fileName: string, contents: object) {
 	writeFile(fileName, JSON.stringify(contents, null, 2))
 }
 

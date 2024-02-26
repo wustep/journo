@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto"
 
-export function randID() {
+export function randId() {
 	return randomUUID().replace(/-/g, "")
 }
 
-export function randIDWithDashes() {
+export function randIdWithDashes() {
 	return randomUUID()
 }
 

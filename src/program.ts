@@ -3,7 +3,7 @@
 import { Command } from "commander"
 import { Client } from "@notionhq/client"
 
-import { getDatabaseId, getDatabasePages } from "./utils/notion"
+import { getPageId, importDatabase, importPage } from "./utils/notion"
 import { writeFile } from "./utils/file"
 
 function Program(): Command {
@@ -34,13 +34,13 @@ function Program(): Command {
 
 	program
 		.command("import-db")
+		.description("Import a Notion database")
 		.argument("<database>", "ID or URL of the Notion database")
 		.option(
 			"-s, --skip",
 			"Skip querying files that have already been retrieved.",
 			false
 		)
-		.description("Import a Notion database")
 		.addHelpText(
 			"after",
 			"Note: URLs should be wrapped in quotes to be interpreted correctly!"
@@ -54,7 +54,7 @@ function Program(): Command {
 			) => {
 				console.log(database, options)
 				const { skip } = options
-				const databaseId = getDatabaseId(database)
+				const databaseId = getPageId(database)
 				if (!notionApiKey) {
 					console.error("No API key found, please use `api` to set it")
 					return
@@ -67,7 +67,45 @@ function Program(): Command {
 					console.error("Invalid database ID or URL")
 					return
 				}
-				await getDatabasePages(notionClient, databaseId, { skip })
+				await importDatabase(notionClient, databaseId, { skip })
+			}
+		)
+
+	program
+		.command("import-page")
+		.description("Import a Notion page")
+		.argument("<page>", "ID or URL of the Notion page")
+		.option(
+			"-s, --skip",
+			"Skip querying files that have already been retrieved.",
+			false
+		)
+		.addHelpText(
+			"after",
+			"Note: URLs should be wrapped in quotes to be interpreted correctly!"
+		)
+		.action(
+			async (
+				page: string,
+				options: {
+					skip: boolean
+				}
+			) => {
+				const { skip } = options
+				const pageId = getPageId(page)
+				if (!notionApiKey) {
+					console.error("No API key found, please use `api` to set it")
+					return
+				}
+				if (!notionClient) {
+					console.error("Invalid API key, unable to connect to Notion.")
+					return
+				}
+				if (!pageId) {
+					console.error("Invalid page ID or URL")
+					return
+				}
+				await importPage(notionClient, pageId, { skip })
 			}
 		)
 

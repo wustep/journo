@@ -18,9 +18,13 @@ import {
 import { sleep } from "./sleep"
 import { withoutDashes } from "./id"
 
-const IMPORT_FOLDER = "/data/import"
+const IMPORT_FOLDER = "/data/import/"
 
-export async function getDatabasePages(
+/**
+ * Get a Notion database and its pages and blocks,
+ * adding it to the import folder.
+ */
+export async function importDatabase(
 	client: Client,
 	databaseId: string,
 	args?: {
@@ -69,7 +73,6 @@ export async function getDatabasePages(
 			}
 		},
 	})
-
 	if (didSkipQueryDatabase) {
 		console.log(
 			`Skipped database query, using existing file at ${queryDatabasePath}, with ${databaseResults.length} results.`
@@ -112,7 +115,7 @@ export async function getDatabasePages(
 
 	console.log()
 
-	// Get blocks from pages
+	// Get blocks from pages, recursively
 	const blocksMap = new Map<string, BlockWithRecursiveChildren>()
 	for (const page of pageResults) {
 		const pageId = withoutDashes(page.id)
@@ -134,6 +137,63 @@ export async function getDatabasePages(
 			writeJSON(getBlocksPath, getBlockResponse)
 			await sleep(250)
 		}
+	}
+}
+
+/**
+ * Get a Notion page and its blocks,
+ * adding it to the import folder.
+ */
+export async function importPage(
+	client: Client,
+	pageId: string,
+	args?: {
+		/**
+		 * Skip populating files that have already been retrieved.
+		 */
+		skip?: boolean
+	}
+) {
+	const { skip } = args ?? {}
+
+	const {
+		page,
+		filePath: getPagePath,
+		didSkip: didSkipGetPage,
+	} = await getPageResponse(client, pageId, { skip })
+	const pageTitleAndEmoji = getPageTitleAndEmoji(page)
+	if (didSkipGetPage) {
+		console.log(
+			`Retrieved page ${pageTitleAndEmoji}, using existing file at ${getPagePath}`
+		)
+		await sleep(100)
+	} else {
+		console.log(
+			`Retrieved page ${pageTitleAndEmoji}, writing to ${getPagePath}`
+		)
+		writeJSON(getPagePath, page)
+		await sleep(250)
+	}
+
+	console.log()
+
+	const blocksMap = new Map<string, BlockWithRecursiveChildren>()
+	const {
+		blocks: getBlockResponse,
+		filePath: getBlocksPath,
+		didSkip: didSkipGetBlocks,
+	} = await getPageBlocks(client, page, blocksMap, { skip })
+	if (didSkipGetBlocks) {
+		console.log(
+			`Retrieved blocks for ${pageTitleAndEmoji}, using existing file at ${getBlocksPath}`
+		)
+		await sleep(100)
+	} else {
+		console.log(
+			`Retrieved blocks for ${pageTitleAndEmoji}, writing to ${getBlocksPath}`
+		)
+		writeJSON(getBlocksPath, getBlockResponse)
+		await sleep(250)
 	}
 }
 
@@ -311,23 +371,40 @@ async function getPageBlocks(
 	}
 }
 
-// async function getBlockRecursively(
-// 	client: Client,
-// 	blockId: string,
-// 	blocksMap: Map<string, BlockWithRecursiveChildren>
-// ): Promise<BlockWithRecursiveChildren> {
-// 	if (blocksMap.has(blockId)) {
-// 		return blocksMap.get(blockId)!
-// 	}
-// 	const block: BlockWithRecursiveChildren = await client.blocks.retrieve({
-// 		block_id: blockId,
-// 	})
-// 	if ("has_children" in block && block.has_children) {
-// 		block.children = await getBlockChildren(client, blockId, blocksMap)
-// 	}
-// 	blocksMap.set(blockId, block)
-// 	return block
-// }
+/**
+ * Get the block with its children recursively filled.
+ *
+ * This should only be used on blocks with children, meaning they're either pages or
+ * blocks with `has_children` set to true.
+ */
+async function getBlockWithChildrenRecursively(
+	client: Client,
+	block: Block,
+	blocksMap: Map<string, BlockWithRecursiveChildren>
+): Promise<BlockWithRecursiveChildren> {
+	const blockId = withoutDashes(block.id)
+	const blocksMapMatch = blocksMap.get(blockId)
+	if (blocksMapMatch) {
+		if (blocksMapMatch.has_children) {
+			return blocksMapMatch
+		}
+	}
+	const children = await getBlockChildrenRecursively(client, block, blocksMap)
+	const blockWithChildren: BlockWithRecursiveChildren = {
+		...block,
+		...(children.length
+			? {
+					has_children: true,
+					children,
+			  }
+			: {
+					has_children: false,
+					children: undefined,
+			  }),
+	}
+	blocksMap.set(blockId, blockWithChildren)
+	return blockWithChildren
+}
 
 async function getBlockChildrenRecursively(
 	client: Client,
@@ -376,44 +453,9 @@ async function getBlockChildrenRecursively(
 }
 
 /**
- * Get the block with its children recursively filled.
- *
- * This should only be used on blocks with children, meaning they're either pages or
- * blocks with `has_children` set to true.
+ * Given a database or page URL or ID as an input, return the undashed uuid.
  */
-async function getBlockWithChildrenRecursively(
-	client: Client,
-	block: Block,
-	blocksMap: Map<string, BlockWithRecursiveChildren>
-): Promise<BlockWithRecursiveChildren> {
-	const blockId = withoutDashes(block.id)
-	const blocksMapMatch = blocksMap.get(blockId)
-	if (blocksMapMatch) {
-		if (blocksMapMatch.has_children) {
-			return blocksMapMatch
-		}
-	}
-	const children = await getBlockChildrenRecursively(client, block, blocksMap)
-	const blockWithChildren: BlockWithRecursiveChildren = {
-		...block,
-		...(children.length
-			? {
-					has_children: true,
-					children,
-			  }
-			: {
-					has_children: false,
-					children: undefined,
-			  }),
-	}
-	blocksMap.set(blockId, blockWithChildren)
-	return blockWithChildren
-}
-
-/**
- * Given a database URL or ID as an input, return the undashed uuid.
- */
-export function getDatabaseId(input: string): string | undefined {
+export function getPageId(input: string): string | undefined {
 	const pattern =
 		/\b[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}\b/i
 	const match = input.match(pattern)
