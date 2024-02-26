@@ -5,12 +5,14 @@ import { Client } from "@notionhq/client"
 
 import { getPageId, importDatabase, importPage } from "./utils/notion"
 import { writeFile } from "./utils/file"
+import { ingestData } from "./utils/ingest"
 
 function Program(): Command {
 	let notionApiKey: string | undefined = process.env.NOTION_API_KEY
 	let notionClient: Client | undefined = notionApiKey
 		? new Client({ auth: notionApiKey })
 		: undefined
+	const today = new Date().toISOString().split("T")[0]
 
 	const program = new Command()
 
@@ -108,6 +110,73 @@ function Program(): Command {
 				await importPage(notionClient, pageId, { skip })
 			}
 		)
+
+	program
+		.command("export-csv")
+		.description("Export ingested data to CSV format")
+		.argument("<output>", "Output file for CSV data")
+		.action((output: string) => {
+			console.error(output)
+		})
+
+	program
+		.command("thoughts")
+		.description("List thoughts from ingested data")
+		.option("-abc, --abc", "Sort by alphabetical order", false)
+		.option("-r, --regex", "Filter by regex", "")
+		.option(
+			"-s, --sentences",
+			"Attempt to split by sentence, otherwise preserve by block / paragraph",
+			false
+		)
+		.option("-n, --newlines", "Add new lines between output", false)
+		.option("-d, --dedupe", "De-dupe duplicates", false)
+		.option("-w, --words", "Split by words", false)
+		.action((options) => {
+			const { abc, regex, sentences, newlines, dedupe, words } = options
+			let thoughts = ingestData({
+				sentences,
+				words,
+			}).filter((thought) => thought.text.length > 1)
+
+			if (!thoughts) {
+				console.error(
+					"No thoughts found! Use import functions to retrieve data for thoughts."
+				)
+				return
+			}
+			if (abc) {
+				thoughts = thoughts.sort((a, b) => (a.text > b.text ? 1 : -1))
+			}
+			if (regex) {
+				const re = new RegExp(regex)
+				thoughts = thoughts.filter((thought) => re.test(thought.text))
+			}
+			if (dedupe) {
+				const seen = new Set()
+				thoughts = thoughts.filter((thought) => {
+					const duplicate = seen.has(thought.text)
+					seen.add(thought.text)
+					return !duplicate
+				})
+			}
+			if (words) {
+				if (newlines) {
+					thoughts.forEach((thought) => {
+						console.log(thought.text)
+					})
+				} else {
+					console.log(thoughts.map((thought) => thought.text).join(" "))
+				}
+			} else {
+				thoughts.forEach((thought) => {
+					console.log(thought.text)
+					if (newlines) {
+						console.log("")
+					}
+				})
+			}
+		})
 
 	return program
 }

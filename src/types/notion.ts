@@ -10,7 +10,7 @@ import {
 } from "@notionhq/client/build/src/api-endpoints"
 
 /**
- * Blocks without children recursively filled.
+ * Blocks directly from Notion API responses, with children and other internal params unfilled.
  */
 export type Block = (
 	| PartialBlockObjectResponse

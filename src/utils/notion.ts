@@ -12,11 +12,9 @@ import {
 } from "@notionhq/client/build/src/api-endpoints"
 
 import { type Block, type BlockWithRecursiveChildren } from "../types/notion"
-import { readFile, writeJSON } from "./file"
+import { IMPORT_FOLDER, readFile, writeJSON } from "./file"
 import { sleep } from "./sleep"
 import { withoutDashes } from "./id"
-
-const IMPORT_FOLDER = "/data/import/"
 
 /**
  * Get a Notion database and its pages and blocks,
@@ -491,4 +489,30 @@ function append(title: string, emoji: string | undefined) {
 
 function toPlainText(blob: RichTextItemResponse[]) {
 	return blob.map((item) => item.plain_text).join("") ?? "Untitled"
+}
+
+export function blockToPlainText(block: BlockWithRecursiveChildren) {
+	let text = ""
+	if ("type" in block) {
+		switch (block.type) {
+			case "paragraph":
+			case "heading_1":
+			case "heading_2":
+			case "heading_3":
+			case "bulleted_list_item":
+			case "numbered_list_item":
+			case "quote":
+				if (block.type in block) {
+					text += toPlainText(block?.[block.type]?.rich_text) ?? ""
+				}
+				break
+			default:
+				text += ""
+		}
+	}
+	if ("children" in block && block.has_children) {
+		text += "\n"
+		text += block.children.map((child) => blockToPlainText(child)).join("\n")
+	}
+	return text
 }

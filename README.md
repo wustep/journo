@@ -12,15 +12,17 @@ This repo creates some utilities and scripts for synthesizing journals from Noti
 5. Now, you can use either `npm run journo [command]` or `journo [command]` (if you used `-g` flag above) to execute commands below!
 
 ### commands
-- `help` - get list of commands
-- `set-api-key [Notion API key]` - to add and store an integration API key in .env file
-- `import-db [Notion Database URL]` - to ingest a database of Notion journal pages, must be shared with the integration
-- `import-page [Notion URL]` - to ingest a Notion page, must be shared with the API key
+- ✅ `help` - get list of commands
+- ✅ `set-api-key [Notion API key]` - to add and store an integration API key in .env file
+- ✅ `import-db [Notion Database URL]` - to ingest a database of Notion journal pages, must be shared with the integration
+- ✅ `import-page [Notion URL]` - to ingest a Notion page, must be shared with the API key
 - `import /path/to/text/file` - to ingest a text file
-- `import-stats` - get stats on all imported content
+-  ✅ `thoughts` - dump all the ingested files into a list of thoughts, with some different organizational options
+- `import-stats` - get various stats on all imported content
 - `create-notion-db [Notion Page URL]` - to create an export database at the given page (it will be nested at that page)
-- `export-notion-db [Notion Database URL]` - to export to a Notion export database that matches the given URL
 - `export-csv /path/to/csv/file` - to export to csv
+- `export-db [Notion Database URL]` - to export to a Notion export database that matches the given URL
+- `set-db [Notion Page URL]` - to set the default notion DB for exporting purposes
 - `trash` - delete all imported content and saved databases
 
 ### dev

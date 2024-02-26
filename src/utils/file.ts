@@ -2,6 +2,7 @@ import fs from "fs-extra"
 import path from "path"
 
 export const ROOT_FOLDER = path.join(__dirname, "..", "..")
+export const IMPORT_FOLDER = path.join(ROOT_FOLDER, "/data/import/")
 
 /**
  * Writes to files from the project root.
@@ -32,4 +33,22 @@ export function readFile(fileName: string): string | undefined {
 	} catch (e) {
 		return
 	}
+}
+
+export function readJSON(fileName: string): object | undefined {
+	try {
+		const newPath = path.join(IMPORT_FOLDER, fileName)
+		return JSON.parse(
+			fs.readFileSync(newPath, {
+				encoding: "utf-8",
+				flag: "r",
+			})
+		)
+	} catch (e) {
+		return
+	}
+}
+
+export function getAllImportedFiles() {
+	return fs.readdirSync(IMPORT_FOLDER)
 }
