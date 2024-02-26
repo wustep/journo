@@ -32,7 +32,7 @@ describe("Commands", () => {
 		})
 	})
 
-	describe("api", () => {
+	describe("set-api-key", () => {
 		test("api sets the API key", () => {
 			const program = getProgram()
 			const apiKey = "secret_LALALALALALLALALALLA"

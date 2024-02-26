@@ -13,13 +13,15 @@ This repo creates some utilities and scripts for synthesizing journals from Noti
 
 ### commands
 - `help` - get list of commands
-- `api [Notion API key]` - to add and store an integration API key in .env file
-- `import [Notion Database URL]` - to add a database of Notion journal pages, must be shared with the integration
-- `import [Notion URL]` - to ingest a Notion page, must be shared with the API key
+- `set-api-key [Notion API key]` - to add and store an integration API key in .env file
+- `import-db [Notion Database URL]` - to ingest a database of Notion journal pages, must be shared with the integration
+- `import-page [Notion URL]` - to ingest a Notion page, must be shared with the API key
 - `import /path/to/text/file` - to ingest a text file
-- `create_notion_export_db [Notion Page URL]` - to create an export database at the given page
-- `export_notion [Notion Database URL]` - to export to a Notion export database
-- `export_csv /path/to/csv/file` - to export to csv
+- `import-stats` - get stats on all imported content
+- `create-notion-db [Notion Page URL]` - to create an export database at the given page (it will be nested at that page)
+- `export-notion-db [Notion Database URL]` - to export to a Notion export database that matches the given URL
+- `export-csv /path/to/csv/file` - to export to csv
+- `trash` - delete all imported content and saved databases
 
 ### dev
 - Run `npm run dev` to execute the program in developer mode, which means it'll auto-build on file edits and let you input commands more quickly.

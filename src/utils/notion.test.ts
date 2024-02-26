@@ -1,12 +1,13 @@
 import { describe, expect, test } from "@jest/globals"
 import { getDatabaseId } from "./notion"
 import { randomUUID } from "crypto"
+import { randID, withoutDashes } from "./id"
 
 describe("getDatabaseId", () => {
-	const uuid1 = randomUUID()
-	const uuid1WithoutDashes = uuid1.replace(/-/g, "")
-	const uuid2 = randomUUID()
-	const uuid2WithoutDashes = uuid2.replace(/-/g, "")
+	const uuid1 = randID()
+	const uuid1WithoutDashes = withoutDashes(uuid1)
+	const uuid2 = randID()
+	const uuid2WithoutDashes = withoutDashes(uuid2)
 
 	it("works with Notion URLs", () => {
 		expect(

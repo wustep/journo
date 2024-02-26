@@ -20,7 +20,7 @@ function Program(): Command {
 		.version("0.1.0")
 
 	program
-		.command("api")
+		.command("set-api-key")
 		.argument("<key>", "API key for Notion (e.g. 'secret_UO1...')")
 		.description("Set the Notion API key")
 		.action((apiKey: string) => {
@@ -33,7 +33,7 @@ function Program(): Command {
 		})
 
 	program
-		.command("import")
+		.command("import-db")
 		.argument("<database>", "ID or URL of the Notion database")
 		.description("Import a Notion database")
 		.addHelpText(
