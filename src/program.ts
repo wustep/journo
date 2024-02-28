@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-import { Command } from "commander"
+import { Command, Option } from "commander"
 import { Client } from "@notionhq/client"
 
 import { getPageId, importDatabase, importPage } from "./utils/notion"
@@ -124,16 +124,30 @@ function Program(): Command {
 		.description("List thoughts from ingested data")
 		.option("-abc, --abc", "Sort by alphabetical order", false)
 		.option("-r, --regex", "Filter by regex", "")
-		.option(
-			"-s, --sentences",
-			"Attempt to split by sentence, otherwise preserve by block / paragraph",
-			false
-		)
 		.option("-n, --newlines", "Add new lines between output", false)
 		.option("-d, --dedupe", "De-dupe duplicates", false)
-		.option("-w, --words", "Split by words", false)
+		.addOption(
+			new Option("-b, --blocks", "Split by blocks / paragraphs of text.")
+				.default(true)
+				.conflicts(["words", "sentences"])
+		)
+		.addOption(
+			new Option("-s, --sentences", "Split by sentences")
+				.default(false)
+				.conflicts(["words", "blocks"])
+		)
+		.addOption(
+			new Option("-w, --words", "Split by words")
+				.default(false)
+				.conflicts("sentences")
+		)
+		.addOption(
+			new Option("-j, --json", "Output as JSON for testing purposes").default(
+				false
+			)
+		)
 		.action((options) => {
-			const { abc, regex, sentences, newlines, dedupe, words } = options
+			const { abc, regex, sentences, newlines, dedupe, words, json } = options
 			let thoughts = ingestData({
 				sentences,
 				words,
@@ -170,7 +184,11 @@ function Program(): Command {
 				}
 			} else {
 				thoughts.forEach((thought) => {
-					console.log(thought.text)
+					if (json) {
+						console.log(JSON.stringify(thought))
+					} else {
+						console.log(thought.text)
+					}
 					if (newlines) {
 						console.log("")
 					}

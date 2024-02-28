@@ -17,6 +17,7 @@ Inspired by [this review of Sheila Heti's Alphabetical Diaries](https://artrevie
 
 ### commands
 - ✅ `help` - get list of commands
+- `set-folder /path/to/folder` - set data folder for imports, ingests, and exports, will default to /data/ in project
 - ✅ `set-api-key [Notion API key]` - to add and store an integration API key in .env file
 - ✅ `import-db [Notion Database URL]` - to ingest pages from a Notion database
 - ✅ `import-page [Notion URL]` - to ingest a Notion page
