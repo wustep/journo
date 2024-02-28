@@ -4,15 +4,16 @@ import { Command, Option } from "commander"
 import { Client } from "@notionhq/client"
 
 import { getPageId, importDatabase, importPage } from "./utils/notion"
-import { writeFile } from "./utils/file"
+import { DATA_FOLDER, ROOT_FOLDER, setEnv } from "./utils/file"
 import { ingestData } from "./utils/ingest"
+import path from "path"
+import { Thought } from "./types/thought"
 
 function Program(): Command {
 	let notionApiKey: string | undefined = process.env.NOTION_API_KEY
 	let notionClient: Client | undefined = notionApiKey
 		? new Client({ auth: notionApiKey })
 		: undefined
-	const today = new Date().toISOString().split("T")[0]
 
 	const program = new Command()
 
@@ -22,13 +23,26 @@ function Program(): Command {
 		.version("0.1.0")
 
 	program
+		.command("set-data-folder")
+		.argument("[folder]", "Folder path", DATA_FOLDER)
+		.description(
+			`Sets the destination folder for all files, defaults to ${DATA_FOLDER}`
+		)
+		.action((folder) => {
+			if (folder) {
+				const newPath = path.resolve(folder ?? DATA_FOLDER)
+				setEnv("DATA_FOLDER", newPath)
+				console.log("Set new output directory to " + newPath)
+			}
+		})
+
+	program
 		.command("set-api-key")
 		.argument("<key>", "API key for Notion (e.g. 'secret_UO1...')")
 		.description("Set the Notion API key")
 		.action((apiKey: string) => {
 			if (apiKey) {
-				// TODO: Append if file exists instead of writing.
-				writeFile(".env", `NOTION_API_KEY=${apiKey}\n`)
+				setEnv("NOTION_API_KEY", apiKey)
 				console.log("API key saved to .env file")
 				notionClient = new Client({ auth: apiKey })
 			}
@@ -122,10 +136,19 @@ function Program(): Command {
 	program
 		.command("thoughts")
 		.description("List thoughts from ingested data")
-		.option("-abc, --abc", "Sort by alphabetical order", false)
-		.option("-r, --regex", "Filter by regex", "")
+		.option("-reg --regex", "Apply a regex filter", "")
 		.option("-n, --newlines", "Add new lines between output", false)
 		.option("-d, --dedupe", "De-dupe duplicates", false)
+		.addOption(
+			new Option("-abc, --abc", "Sort by alphabetical order")
+				.default(false)
+				.conflicts(["random"])
+		)
+		.addOption(
+			new Option("-r, --rand, --random", "Randomized sort")
+				.default(false)
+				.conflicts(["abc"])
+		)
 		.addOption(
 			new Option("-b, --blocks", "Split by blocks / paragraphs of text.")
 				.default(true)
@@ -147,7 +170,8 @@ function Program(): Command {
 			)
 		)
 		.action((options) => {
-			const { abc, regex, sentences, newlines, dedupe, words, json } = options
+			const { abc, regex, rand, sentences, newlines, dedupe, words, json } =
+				options
 			let thoughts = ingestData({
 				sentences,
 				words,
@@ -173,6 +197,14 @@ function Program(): Command {
 					seen.add(thought.text)
 					return !duplicate
 				})
+			}
+			if (rand) {
+				// TODO: This is like O(n^2) time, should be faster.
+				let randThoughts: Thought[] = []
+				for (let thought of thoughts) {
+					let randIndex = Math.round(Math.random() * randThoughts.length)
+					randThoughts.splice(randIndex, 0, thought)
+				}
 			}
 			if (words) {
 				if (newlines) {

@@ -33,10 +33,10 @@ describe("Commands", () => {
 	})
 
 	describe("set-api-key", () => {
-		test("api sets the API key", () => {
+		test("set-api-key sets the API key", () => {
 			const program = getProgram()
 			const apiKey = "secret_LALALALALALLALALALLA"
-			program.parse(["node", "test", "api", apiKey])
+			program.parse(["node", "test", "set-api-key", apiKey])
 			expect(fs.readFileSync(path.join(ROOT_FOLDER, ".env"), "utf-8")).toBe(
 				`NOTION_API_KEY=${apiKey}\n`
 			)
