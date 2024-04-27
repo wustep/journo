@@ -17,13 +17,13 @@ Inspired by [this review of Sheila Heti's Alphabetical Diaries](https://artrevie
 
 ### commands
 - ✅ `help` - get list of commands
-- `set-folder /path/to/folder` - set data folder for imports, ingests, and exports, will default to /data/ in project
+- ✅ `set-data-folder /path/to/folder` - set data folder for imports, ingests, and exports, will default to /data/ in project
 - ✅ `set-api-key [Notion API key]` - to add and store an integration API key in .env file
 - ✅ `import-db [Notion Database URL]` - to ingest pages from a Notion database
 - ✅ `import-page [Notion URL]` - to ingest a Notion page
-- `import /path/to/text/file` - to ingest a text file
+- ✅ `import /path/to/text/file` - to ingest a text or md file
 - ✅ `thoughts` - dump all the ingested files into a list of thoughts, with some different organizational options
-  - ✅ `--abc` (alphabetical), `--regex` (filter by regex), `--sentences` (split by sentences), `--newlines` (add newlines), `--dedupe` (skip dupes), `--words` (split by words)
+  - ✅ `--abc` (alphabetical), `--regex` (filter by regex), `--sentences` (split by sentences), `--newlines` (add newlines), `--dedupe` (skip dupes), `--words` (split by words), `--random` (randomize order)
 - `import-stats` - get various stats on all imported content
 - `create-notion-db [Notion Page URL]` - to create an export database at the given page (it will be nested at that page)
 - `export-csv /path/to/csv/file` - to export to csv
