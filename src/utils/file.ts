@@ -1,6 +1,8 @@
 import fs from "fs-extra"
 import path from "path"
 
+require("dotenv").config()
+
 export const ROOT_FOLDER = path.join(__dirname, "..", "..")
 
 export const DATA_FOLDER =

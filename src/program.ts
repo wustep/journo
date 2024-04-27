@@ -4,12 +4,20 @@ import { Command, Option } from "commander"
 import { Client } from "@notionhq/client"
 
 import { getPageId, importDatabase, importPage } from "./utils/notion"
-import { DATA_FOLDER, copyFile, extension, writeJSON } from "./utils/file"
+import {
+	DATA_FOLDER,
+	copyFile,
+	extension,
+	importPath,
+	writeJSON,
+} from "./utils/file"
 import { ingestData } from "./utils/ingest"
 import path from "path"
 import { Thought } from "./types/thought"
 import { getISODate } from "./utils/time"
 import { setEnv } from "./utils/env"
+
+require("dotenv").config()
 
 function Program(): Command {
 	let notionApiKey: string | undefined = process.env.NOTION_API_KEY
@@ -28,7 +36,7 @@ function Program(): Command {
 		.command("set-data-folder")
 		.argument("[folder]", "Folder path", DATA_FOLDER)
 		.description(
-			`Sets the destination folder for all files, defaults to ${DATA_FOLDER}`
+			`Sets the destination folder for all files, currently ${DATA_FOLDER}`
 		)
 		.action((folder) => {
 			if (folder) {
@@ -70,7 +78,6 @@ function Program(): Command {
 					skip: boolean
 				}
 			) => {
-				console.log(database, options)
 				const { skip } = options
 				const databaseId = getPageId(database)
 				if (!notionApiKey) {
@@ -107,6 +114,7 @@ function Program(): Command {
 				page: string,
 				options: {
 					skip: boolean
+					limit: number
 				}
 			) => {
 				const { skip } = options
@@ -133,7 +141,7 @@ function Program(): Command {
 		.argument("<file>", "File to import")
 		.action((file) => {
 			if (extension(file) === "md" || extension(file) === "txt") {
-				copyFile(file, importFolder(file.split("/").pop() ?? ""))
+				copyFile(file, importPath(file.split("/").pop() ?? ""))
 			} else {
 				console.error("Invalid file type. Only .txt and .md files supported.")
 			}
@@ -247,6 +255,3 @@ function Program(): Command {
 }
 
 export { Program }
-function importFolder(arg0: any): string {
-	throw new Error("Function not implemented.")
-}
