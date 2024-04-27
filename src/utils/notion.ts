@@ -204,7 +204,7 @@ async function getDatabaseResponse(
 	filePath: string
 	didSkip: boolean
 }> {
-	const filePath = path.join(IMPORT_FOLDER, `getDatabase-${databaseId}.json`)
+	const filePath = importPath(`getDatabase-${databaseId}.json`)
 	if (args?.skip) {
 		const storedResult = readFile(filePath)
 		if (storedResult) {
@@ -240,7 +240,7 @@ async function queryDatabaseResults(
 	filePath: string
 	didSkip: boolean
 }> {
-	const filePath = path.join(IMPORT_FOLDER, `queryDatabase-${databaseId}.json`)
+	const filePath = importPath(`queryDatabase-${databaseId}.json`)
 	if (args.skip) {
 		const storedResult = readFile(filePath)
 		if (storedResult) {
@@ -321,7 +321,7 @@ async function getPageBlocks(
 	didSkip: boolean
 }> {
 	const pageId = withoutDashes(page.id)
-	const filePath = path.join(IMPORT_FOLDER, `getBlocks-${pageId}.json`)
+	const filePath = importPath(`getBlocks-${pageId}.json`)
 	if (args?.skip) {
 		const storedResult = readFile(filePath)
 		if (storedResult) {

@@ -10,16 +10,21 @@ export const DATA_FOLDER =
 
 export const IMPORT_FOLDER = path.join(DATA_FOLDER, "./import/")
 
+export const THOUGHTS_FOLDER = path.join(DATA_FOLDER, "./thoughts/")
+
 export function rootPath(file: string) {
 	return path.join(ROOT_FOLDER, file)
+}
+export function dataPath(file: string) {
+	return path.join(DATA_FOLDER, file)
 }
 
 export function importPath(file: string) {
 	return path.join(IMPORT_FOLDER, file)
 }
 
-export function dataPath(file: string) {
-	return path.join(DATA_FOLDER, file)
+export function thoughtsPath(file: string) {
+	return path.join(THOUGHTS_FOLDER, file)
 }
 
 /**

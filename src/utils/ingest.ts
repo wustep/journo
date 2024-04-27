@@ -1,6 +1,6 @@
 import { BlockWithRecursiveChildren } from "../types/notion"
 import { type Thought } from "../types/thought"
-import { getAllImportedFiles, readFile, readJSON } from "./file"
+import { getAllImportedFiles, importPath, readFile, readJSON } from "./file"
 import { withoutDashes } from "./id"
 import { blockToPlainText } from "./notion"
 
@@ -21,7 +21,7 @@ function ingestTextFiles(
 	const files = getAllImportedFiles()
 	files.forEach((file) => {
 		if (file.endsWith(".txt")) {
-			const contents = readFile(file) as string | undefined
+			const contents = readFile(importPath(file)) as string | undefined
 			if (contents) {
 				const newThoughts = split(contents, args)
 				if (newThoughts.length) {
@@ -51,7 +51,7 @@ function ingestNotionPages(
 	const files = getAllImportedFiles()
 	files.forEach((file) => {
 		if (file.match(pageContentFiles)) {
-			const contents = readJSON(file) as
+			const contents = readJSON(importPath(file)) as
 				| BlockWithRecursiveChildren[]
 				| undefined
 			if (contents) {

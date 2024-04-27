@@ -9,6 +9,8 @@ import {
 	copyFile,
 	extension,
 	importPath,
+	thoughtsPath,
+	writeFile,
 	writeJSON,
 } from "./utils/file"
 import { ingestData } from "./utils/ingest"
@@ -114,7 +116,6 @@ function Program(): Command {
 				page: string,
 				options: {
 					skip: boolean
-					limit: number
 				}
 			) => {
 				const { skip } = options
@@ -198,7 +199,6 @@ function Program(): Command {
 				sentences,
 				words,
 			}).filter((thought) => thought.text.length > 1)
-			writeJSON(`./ingest/${getISODate()}.txt`, thoughts)
 
 			if (!thoughts) {
 				console.error(
@@ -229,26 +229,34 @@ function Program(): Command {
 					randThoughts.splice(randIndex, 0, thought)
 				}
 			}
+			let out = ""
 			if (words) {
 				if (newlines) {
 					thoughts.forEach((thought) => {
 						console.log(thought.text)
+						out += thought.text + "\n"
 					})
 				} else {
 					console.log(thoughts.map((thought) => thought.text).join(" "))
+					out = thoughts.map((thought) => thought.text).join(" ")
 				}
 			} else {
 				thoughts.forEach((thought) => {
 					if (json) {
 						console.log(JSON.stringify(thought))
+						out += JSON.stringify(thought) + "\n"
 					} else {
 						console.log(thought.text)
+						out += thought.text + "\n"
 					}
 					if (newlines) {
 						console.log("")
+						out += "\n"
 					}
 				})
 			}
+			const path = thoughtsPath(getISODate() + ".txt")
+			writeFile(path, out)
 		})
 
 	return program
