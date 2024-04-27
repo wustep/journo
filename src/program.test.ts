@@ -37,9 +37,9 @@ describe("Commands", () => {
 			const program = getProgram()
 			const apiKey = "secret_LALALALALALLALALALLA"
 			program.parse(["node", "test", "set-api-key", apiKey])
-			expect(fs.readFileSync(path.join(ROOT_FOLDER, ".env"), "utf-8")).toBe(
-				`NOTION_API_KEY=${apiKey}\n`
-			)
+			expect(
+				fs.readFileSync(path.join(ROOT_FOLDER, ".env"), "utf-8")
+			).toContain(`NOTION_API_KEY=${apiKey}`)
 			expect(consoleLog).toHaveBeenCalledWith("API key saved to .env file")
 		})
 	})

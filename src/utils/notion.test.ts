@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals"
+import { describe, expect, it } from "@jest/globals"
 import { getPageId } from "./notion"
 import { randId, withoutDashes } from "./id"
 

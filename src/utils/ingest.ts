@@ -1,6 +1,6 @@
 import { BlockWithRecursiveChildren } from "../types/notion"
 import { type Thought } from "../types/thought"
-import { getAllImportedFiles, readJSON } from "./file"
+import { getAllImportedFiles, readFile, readJSON } from "./file"
 import { withoutDashes } from "./id"
 import { blockToPlainText } from "./notion"
 
@@ -9,15 +9,40 @@ export function ingestData(args: {
 	words: boolean
 }): Thought[] {
 	const thoughts: Thought[] = []
+	ingestTextFiles(thoughts, args)
 	ingestNotionPages(thoughts, args)
 	return thoughts
 }
 
-const pageContentFiles = new RegExp(".*getBlocks.*.json")
+function ingestTextFiles(
+	thoughts: Thought[],
+	args: { sentences: boolean; words: boolean }
+) {
+	const files = getAllImportedFiles()
+	files.forEach((file) => {
+		if (file.endsWith(".txt")) {
+			const contents = readFile(file) as string | undefined
+			if (contents) {
+				const newThoughts = split(contents, args)
+				if (newThoughts.length) {
+					newThoughts.forEach((thought) =>
+						thoughts.push({
+							type: args.sentences ? "sentence" : args.words ? "word" : "block",
+							id: file,
+							text: thought,
+							timestamp: "",
+							source: {
+								file: file,
+							},
+						})
+					)
+				}
+			}
+		}
+	})
+}
 
-// TODO: we should probably store thoughts in some data struct (JSON isn't terrible)
-// data/thoughts/blocks, sentences, words, etc
-// and then manipulate it afterwards
+const pageContentFiles = new RegExp(".*getBlocks.*.json")
 
 function ingestNotionPages(
 	thoughts: Thought[],

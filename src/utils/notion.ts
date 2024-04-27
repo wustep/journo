@@ -12,7 +12,7 @@ import {
 } from "@notionhq/client/build/src/api-endpoints"
 
 import { type Block, type BlockWithRecursiveChildren } from "../types/notion"
-import { IMPORT_FOLDER, readFile, writeJSON } from "./file"
+import { IMPORT_FOLDER, importPath, readFile, writeJSON } from "./file"
 import { sleep } from "./sleep"
 import { withoutDashes } from "./id"
 
@@ -283,7 +283,7 @@ async function getPageResponse(
 	filePath: string
 	didSkip: boolean
 }> {
-	const filePath = path.join(IMPORT_FOLDER, `getPage-${pageId}.json`)
+	const filePath = importPath(`getPage-${pageId}.json`)
 	if (args?.skip) {
 		const storedResult = readFile(filePath)
 		if (storedResult) {

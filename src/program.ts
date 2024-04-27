@@ -4,10 +4,12 @@ import { Command, Option } from "commander"
 import { Client } from "@notionhq/client"
 
 import { getPageId, importDatabase, importPage } from "./utils/notion"
-import { DATA_FOLDER, ROOT_FOLDER, setEnv } from "./utils/file"
+import { DATA_FOLDER, copyFile, extension, writeJSON } from "./utils/file"
 import { ingestData } from "./utils/ingest"
 import path from "path"
 import { Thought } from "./types/thought"
+import { getISODate } from "./utils/time"
+import { setEnv } from "./utils/env"
 
 function Program(): Command {
 	let notionApiKey: string | undefined = process.env.NOTION_API_KEY
@@ -126,12 +128,24 @@ function Program(): Command {
 		)
 
 	program
-		.command("export-csv")
-		.description("Export ingested data to CSV format")
-		.argument("<output>", "Output file for CSV data")
-		.action((output: string) => {
-			console.error(output)
+		.command("import")
+		.description("Import a .txt or .md file")
+		.argument("<file>", "File to import")
+		.action((file) => {
+			if (extension(file) === "md" || extension(file) === "txt") {
+				copyFile(file, importFolder(file.split("/").pop() ?? ""))
+			} else {
+				console.error("Invalid file type. Only .txt and .md files supported.")
+			}
 		})
+
+	// program
+	// 	.command("export-csv")
+	// 	.description("Export ingested data to CSV format")
+	// 	.argument("<output>", "Output file for CSV data")
+	// 	.action((output: string) => {
+	// 		console.error(output)
+	// 	})
 
 	program
 		.command("thoughts")
@@ -176,6 +190,7 @@ function Program(): Command {
 				sentences,
 				words,
 			}).filter((thought) => thought.text.length > 1)
+			writeJSON(`./ingest/${getISODate()}.txt`, thoughts)
 
 			if (!thoughts) {
 				console.error(
@@ -232,3 +247,6 @@ function Program(): Command {
 }
 
 export { Program }
+function importFolder(arg0: any): string {
+	throw new Error("Function not implemented.")
+}
